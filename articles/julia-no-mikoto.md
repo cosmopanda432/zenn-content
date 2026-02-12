@@ -2,7 +2,7 @@
 title: "RTX 3060で神を作る — 古事記アーキテクチャで挑んだJulia特化LLM開発記"
 emoji: "⛩️"
 type: "tech"
-topics: ["Julia", "LLM", "MachineLearning", "PyTorch", "Transformer"]
+topics: ["Julia", "LLM", "ローカル環境", "PyTorch", "Transformer"]
 published: true
 ---
 

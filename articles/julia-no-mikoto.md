@@ -489,7 +489,7 @@ v0.3.0の五層パイプラインは、この「崩壊リスク」を**REPAIR/HA
 
 ### チェックポイント
 
-Hugging Face Hub（準備中）:
+**[cosmopanda/Julia-no-Mikoto](https://huggingface.co/cosmopanda/Julia-no-Mikoto)** (Hugging Face Hub):
 - `kojiki_moe_final_v2_best.pt`（269MB）
 
 ### ライセンス

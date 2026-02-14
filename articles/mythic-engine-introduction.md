@@ -18,6 +18,8 @@ LLMは回答の根拠が不透明です。ハルシネーション（もっと�
 
 この問題を解決するために、**Mythic Inference Engine** を作りました。
 
+※公開準備中です
+
 https://github.com/cosmopanda432/mythic-engine
 
 ## Mythic Engine とは
@@ -332,6 +334,8 @@ Mythic Inference Engineは「LLMに根拠と説明責任を持たせる」ため
 - 全ての過程を**監査ログ**に記録
 - **5種類の判断**で「自信がないのに断言する」問題を防止
 - GPU不要、Rustシングルバイナリで動作
+
+※公開準備中です
 
 https://github.com/cosmopanda432/mythic-engine
 

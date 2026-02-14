@@ -6,6 +6,8 @@ topics: ["rust", "llm", "ai", "axum", "推論"]
 published: false
 ---
 
+> **注意**: これは完成された製品ではなく、アーキテクチャの提案（PoC）です。
+
 ## はじめに
 
 ChatGPTやClaudeに質問すると、もっともらしい答えが返ってきます。しかし、こう思ったことはないでしょうか。
@@ -15,7 +17,6 @@ ChatGPTやClaudeに質問すると、もっともらしい答えが返ってき�
 LLMは回答の根拠が不透明です。ハルシネーション（もっともらしい嘘）を見抜くには、人間が事後的に検証するしかありません。
 
 この問題を解決するために、**Mythic Inference Engine** を作りました。
-※公開準備中
 
 https://github.com/cosmopanda432/mythic-engine
 
@@ -42,7 +43,7 @@ Audit:    S1→S2→S3→...→S10(ASSERT)→S12→S13
 | 判断過程 | ブラックボックス | 13状態マシンで全記録 |
 | 再現性 | 温度パラメータに依存 | JCS+SHA-256で決定論的ハッシュ |
 | 判断の種類 | 「回答」のみ | Assert/Hedge/Ask/Refuse/Defer |
-| GPU | 必須 | 不要（RustコアはCPUのみで動作） |
+| GPU | 必須 | 不要（Rustコアはコアはで動作） |
 
 ## なぜ作ったのか
 
@@ -107,7 +108,7 @@ Mythic EngineはRust製のシングルバイナリです。v0.12でPython依存�
          │              │
          ▼              ▼
    Knowledge Base   LLM APIs
-   (JSON)           (vLLM/Gemini/OpenAI/Claude/Ollama/DeepSeek)
+   (JSON)           (vLLM/Gemini/OpenAI/Ollama/DeepSeek)
 ```
 
 ### 13-State Machine
@@ -131,6 +132,22 @@ S13: End               処理完了
 ```
 
 ポイントは **S2: Freeze** です。入力をJSON Canonicalization Scheme (JCS, RFC 8785) で正規化し、SHA-256でハッシュ化することで、同じ入力に対して常に同じハッシュが得られます。これにより**再現性と改ざん検知**が可能になります。
+
+もう一つの重要なステップが **S3: Translator（意図解析）** です。ユーザーの自然文をLLMに渡し、エンジンが処理できる構造化データ（IntentEnvelope）に変換します。
+
+```
+入力: "日本の首都は？"
+         ↓ LLMが意図を解析
+{
+  "goal": "日本の首都を知りたい",       // 目的（簡潔に整理）
+  "keywords": ["日本", "首都"],         // 根拠検索用キーワード
+  "task_type": "qa"                    // 質問の種類
+}
+```
+
+このキーワードを使って後続のS7（証拠収集）でKnowledge Baseを検索し、見つかった証拠の信頼度に基づいてS10（判断）で5種類の決裁を下します。
+
+1つの質問に対して最高で2回LLMを呼び出す構造になっています（S3の意図解析と、S10以降の応答生成）。
 
 ### 5つの判断タイプ
 
@@ -171,6 +188,8 @@ python tools/csv2knowledge.py knowledge/my_data.csv --validate-only
 
 生成されたJSONを起動時に指定するだけで、エンジンがキーワードマッチやベクトル検索で関連エントリを見つけ出し、回答の証拠として提示します。
 
+**エントリ数の目安**: Knowledge BaseはJSON全件をメモリにロードし、キーワードで線形検索します。数千件程度であれば問題なく動作します。1万件を超える規模のデータには、ベクトル検索（Vector Search）の利用を推奨します。
+
 ```bash
 ./target/release/mythic-engine serve \
   --knowledge ./knowledge/my_data.json
@@ -201,11 +220,11 @@ cargo build --release
 
 ### LLMプロバイダの設定
 
-`config/server.yaml` でLLMプロバイダを選択します。ローカルLLM（vLLM, Ollama）とクラウドAPI（Gemini, OpenAI, Claude, DeepSeek）の両方に対応しています。
+`config/server.yaml` でLLMプロバイダを選択します。ローカルLLM（vLLM, Ollama）とクラウドAPI（Gemini, OpenAI, DeepSeek）の両方に対応しています。
 
 ```yaml
 llm:
-  provider: gemini  # vllm | gemini | openai | claude | ollama | deepseek
+  provider: gemini  # vllm | gemini | openai | ollama | deepseek
   gemini:
     model: "gemini-2.0-flash"
 ```
@@ -227,6 +246,8 @@ export GEMINI_API_KEY=your-api-key
 ブラウザで `http://localhost:8082/` を開くとWeb UIが使えます。
 
 ### APIで問い合わせ
+
+Mythic Engineは用途に応じて複数のAPIメソッドを提供しています（`mythic.ask` / `llm.chat` / `mythic.run` / `mythic.translate`）。Web UIやREST APIからは全自動の `mythic.ask` が使われます。各メソッドの違いや使い分けについては [READMEのAPIリファレンス](https://github.com/cosmopanda432/mythic-engine#api-リファレンス) を参照してください。
 
 ```bash
 curl -X POST http://localhost:8082/api/v1/ask \
@@ -312,11 +333,19 @@ Mythic Inference Engineは「LLMに根拠と説明責任を持たせる」ため
 - **5種類の判断**で「自信がないのに断言する」問題を防止
 - GPU不要、Rustシングルバイナリで動作
 
-「LLMの出力をそのまま信じるのは怖い」と感じている方、ぜひ試してみてください。
-
 https://github.com/cosmopanda432/mythic-engine
 
-フィードバックやIssue、Pull Request歓迎です！
+## ライセンス
+
+Apache License 2.0
+
+## 作者
+
+cosmopanda
+
+## 貢献
+
+これは研究用のプロトタイプです。
 
 ## 謝辞
 

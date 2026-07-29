@@ -1,8 +1,8 @@
 ---
-title: "「書き手は人間ではない」を前提に言語を設計するとどうなるか"
+title: "安全な自己書き換えを目指した新言語"
 emoji: "🌱"
 type: "idea"
-topics: ["llm", "programminglanguage", "設計", "型システム", "ai"]
+topics: ["llm", "アーキテクチャ", "言語", "型システム", "ai"]
 published: false
 ---
 

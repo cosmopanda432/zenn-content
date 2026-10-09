@@ -2,7 +2,7 @@
 title: "AGI級の自己改変を安全に扱う新プログラム言語基盤「Sprout」"
 emoji: "🌱"
 type: "Tech"
-topics: ["AI安全性", "新プログラミング言語", "言語設計", "再帰的自己改善", "Lisp"]
+topics: ["安全性", "プログラミング言語", "AI", "再帰的自己改善", "Lisp"]
 published: false
 ---
 

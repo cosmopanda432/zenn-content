@@ -210,6 +210,7 @@ hook は、ツールの呼び出しを 1 つずつ字で見て止めます。役
 
 raiya-plugin の役の定義は、[superpowers](https://github.com/obra/superpowers) の手順がなければ、ここまでの形になりませんでした。テストを先に書いて落ちるのを観る、証拠なしに完了と言わない、といった手順が丁寧に言葉にされていたおかげで、私はそれを土台にして「守られたかを確かめる」部分に集中できました。手順を MIT License で公開してくださっている作者の Jesse Vincent さんと、superpowers のコントリビューターの皆さんに感謝します。
 
+β版として公開しています。不具合やご意見は Issue でお知らせください。
 https://github.com/cosmopanda432/raiya-plugin
 
 raiya-plugin は Apache License 2.0 で公開しています。役の定義の本文の一部は superpowers(MIT License)をもとにしており、出所と許諾文の全文はリポジトリの `THIRD_PARTY_NOTICES.md` に載せています。
